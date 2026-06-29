@@ -53,5 +53,9 @@ public class Auction {
 
        sc.close();
    }
+   public static void main(String[] args) {
+		Auction auction = new Auction();
+		auction.startAuction();
+	}
 
 }
