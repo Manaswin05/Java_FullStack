@@ -1,15 +1,16 @@
 package com.mmcoe.Auction;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Team {
 	private String teamName;
 	private double purse;
-	private ArrayList<Player> squad;
+	private List<Player> squad;
 
-	public Team(String teamName, double purse) {
+	
+	public Team(String teamName, double purse, List<Player> squad) {
 		this.teamName = teamName;
 		this.purse = purse;
-		squad = new ArrayList<>();
+		this.squad = squad;
 	}
 	public boolean buyPlayer(Player player, double bid) {
 		if (bid <= purse) {
