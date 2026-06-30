@@ -57,5 +57,4 @@ public class Auction {
 		Auction auction = new Auction();
 		auction.startAuction();
 	}
-
 }
