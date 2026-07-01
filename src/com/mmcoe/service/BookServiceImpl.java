@@ -1,7 +1,9 @@
 package com.mmcoe.service;
 import com.mmcoe.dao.BookDao;
-import com.mmcoe.dao.BookDaoCollectionImpl;
+
 import com.mmcoe.pojo.Book;
+
+import java.util.Comparator;
 import java.util.List;
 
 public class BookServiceImpl implements BookDao {
@@ -27,19 +29,28 @@ public class BookServiceImpl implements BookDao {
 
 	@Override
 	public List<Book> list() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Boolean delete(int isbn){
-		// TODO Auto-generated method stub
-		return dao.delete(isbn);
+	public Boolean delete(int isbn) throws BookNotFoundException{
+		try {			
+			return dao.delete(isbn);
+		}catch (BookNotFoundException e) {
+			throw new BookNotFoundException("Book not found ISBN : "+ isbn);
+		}
 	}
 
 	@Override
 	public List<Book> FindBooksByPrice(double min, double max) {
 		return dao.FindBooksByPrice(min, max);
+	}
+	@Override 
+	public List<Book> listOrderByTitle(){
+		Comparator<Book> titleComp = (b1,b2)->b1.getTitle().compareTo(b2.getTitle());
+		List<Book> list = dao.list();
+		list.sort(titleComp);
+		return list;
 	}
 
 }

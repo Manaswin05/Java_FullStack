@@ -32,5 +32,6 @@ public class TestBookService implements BookDao {
 		catch (BookNotFoundException e){
 			e.printStackTrace();			
 		}
+		service.listOrderByTitle().forEach(System.out::println);
 	}
 }
