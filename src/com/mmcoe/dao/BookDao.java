@@ -8,6 +8,7 @@ public interface BookDao {
 	boolean save(Book b);
 	Book find(int isbn) throws BookNotFoundException;
 	List<Book> list();
-	Boolean delete(int isbn);
+	Boolean delete(int isbn) throws BookNotFoundException;
 	List<Book> FindBooksByPrice(double min, double max);
+	List<Book> listOrderByTitle();
 }

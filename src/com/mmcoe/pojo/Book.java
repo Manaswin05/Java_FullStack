@@ -1,6 +1,6 @@
 package com.mmcoe.pojo;
 
-public class Book {
+public class Book{
 	private int isbn;
 	private String title,author;
 	private double price;
@@ -40,6 +40,5 @@ public class Book {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	
 	
 }

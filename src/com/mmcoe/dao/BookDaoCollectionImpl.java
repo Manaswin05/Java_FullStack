@@ -7,7 +7,7 @@ public class BookDaoCollectionImpl implements BookDao {
 	private List<Book> books;
 	
 	public BookDaoCollectionImpl() {
-		books = new Vector<Book>();
+		Stream<String>
 	}
 
 	public void Display() {
@@ -20,7 +20,6 @@ public class BookDaoCollectionImpl implements BookDao {
 		books.add(b);
 		return false;
 	}
-
 	@Override
 	public Book find(int isbn) {
 		for(Book b : books) {
