@@ -2,12 +2,14 @@ package com.mmcoe.dao;
 import com.mmcoe.pojo.Book;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.BaseStream;
 
-public class BookDaoCollectionImpl implements BookDao {
+public abstract class BookDaoCollectionImpl implements BookDao {
+	private static final String Stream = null;
 	private List<Book> books;
 	
 	public BookDaoCollectionImpl() {
-		Stream<String>
+		this.books = books;
 	}
 
 	public void Display() {
