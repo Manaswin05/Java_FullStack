@@ -1,64 +1,74 @@
 package com.mmcoe.dao;
+
 import com.mmcoe.pojo.Book;
+import com.mmcoe.service.BookNotFoundException;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Vector;
-import java.util.stream.BaseStream;
 
-public abstract class BookDaoCollectionImpl implements BookDao {
-	private static final String Stream = null;
-	private List<Book> books;
-	
-	public BookDaoCollectionImpl() {
-		this.books = books;
-	}
+public class BookDaoCollectionImpl implements BookDao {
 
-	public void Display() {
-		for(Book b : books) {
-			System.out.println(b.toString());
-		}
-	}
-	@Override
-	public boolean save(Book b) {
-		books.add(b);
-		return false;
-	}
-	@Override
-	public Book find(int isbn) {
-		for(Book b : books) {
-			if(b.getIsbn()==isbn) {
-				return b;
-			}
-		}
-		return null;
-	}
+    private List<Book> books;
 
-	@Override
-	public List<Book> list() {
-		return null;
-	}
+    public BookDaoCollectionImpl() {
+        this.books = new ArrayList<>();  // Fix: was assigning null to itself
+    }
 
-	public Boolean delete(int isbn) {
-		for(Book b : books) {
-			if(b.getIsbn()==isbn) {
-				books.remove(b);
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public void insert(Book book) {
-	    books.add(book);
-	}
-	
-	@Override
-	public List<Book> FindBooksByPrice (double min, double max){
-		List<Book> result = new Vector<Book>();
-		for(Book b : books) {
-			if(b.getPrice() <= max && b.getPrice()>=min) {
-				result.add(b);
-			}
-		}
-		return result;
-	}
+    public void Display() {
+        for (Book b : books) {
+            System.out.println(b.toString());
+        }
+    }
+
+    @Override
+    public boolean save(Book b) {
+        books.add(b);
+        return true;
+    }
+
+    @Override
+    public Book find(int isbn) throws BookNotFoundException {  // Fix: added throws clause
+        for (Book b : books) {
+            if (b.getIsbn() == isbn) {
+                return b;
+            }
+        }
+        throw new BookNotFoundException("Book not found with ISBN: " + isbn);
+    }
+
+    @Override
+    public List<Book> list() {
+        return new ArrayList<>(books);
+    }
+
+    @Override
+    public Boolean delete(int isbn) throws BookNotFoundException {  // Fix: added throws clause
+        for (Book b : books) {
+            if (b.getIsbn() == isbn) {
+                books.remove(b);
+                return true;
+            }
+        }
+        throw new BookNotFoundException("Book not found with ISBN: " + isbn);
+    }
+
+    @Override
+    public List<Book> FindBooksByPrice(double min, double max) {
+        List<Book> result = new ArrayList<>();
+        for (Book b : books) {
+            if (b.getPrice() >= min && b.getPrice() <= max) {
+                result.add(b);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Book> listOrderByTitle() {  // Fix: was missing from interface implementation
+        Comparator<Book> titleComp = (b1, b2) -> b1.getTitle().compareTo(b2.getTitle());
+        List<Book> sorted = new ArrayList<>(books);
+        sorted.sort(titleComp);
+        return sorted;
+    }
 }
