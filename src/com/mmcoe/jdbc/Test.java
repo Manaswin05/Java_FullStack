@@ -10,41 +10,36 @@ public class Test {
         BookDaoCollectionImpl bd = new BookDaoCollectionImpl();
 
         // Save books to DB
-        bd.save(new Book(101, "A", "a", 20.0));
-        bd.save(new Book(102, "B", "b", 75.0));
-        bd.save(new Book(103, "C", "c", 45.0));
-        bd.save(new Book(104, "D", "d", 50.0));
+        bd.save(new Book(11, "The Alchemist", "Paulo Coelho", 250));
+        bd.save(new Book(12, "Metamorphosis", "Frank Kafka", 210));
+        bd.save(new Book(13, "C Programming", "Zubair Shaikh", 150));
         System.out.println("Books saved.");
 
-        // List all books
+        // List all
         System.out.println("\nAll books:");
-        List<Book> all = bd.list();
-        for (Book b : all) System.out.println(b);
+        for (Book b : bd.list()) System.out.println(b);
 
-        // Find a book
+        // Find
         try {
-            Book found = bd.find(101);
-            System.out.println("\nFound: " + found);
+            System.out.println("\nFound: " + bd.find(12));
         } catch (BookNotFoundException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
-        // Books by price range
-        System.out.println("\nBooks priced 40 - 80:");
-        List<Book> priceRange = bd.FindBooksByPrice(40.0, 80.0);
-        for (Book b : priceRange) System.out.println(b);
+        // Price range
+        System.out.println("\nBooks priced 200 - 300:");
+        for (Book b : bd.FindBooksByPrice(200, 300)) System.out.println(b);
 
-        // List ordered by title
-        System.out.println("\nBooks ordered by title:");
-        List<Book> ordered = bd.listOrderByTitle();
-        for (Book b : ordered) System.out.println(b);
+        // Ordered by title
+        System.out.println("\nOrdered by title:");
+        bd.listOrderByTitle().forEach(System.out::println);
 
-        // Delete a book
+        // Delete
         try {
-            bd.delete(101);
-            System.out.println("\nBook 101 deleted.");
+            bd.delete(11);
+            System.out.println("\nBook 11 deleted.");
         } catch (BookNotFoundException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
