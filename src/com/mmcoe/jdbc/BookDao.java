@@ -1,14 +1,14 @@
 package com.mmcoe.jdbc;
-import java.util.List;
 
+import java.util.List;
+import java.util.Optional;
 import com.mmcoe.pojo.Book;
-import com.mmcoe.service.BookNotFoundException;
 
 public interface BookDao {
 	boolean save(Book b);
-	Book find(int isbn) throws BookNotFoundException;
+	Optional<Book> find(int isbn);
 	List<Book> list();
-	Boolean delete(int isbn) throws BookNotFoundException;
-	List<Book> FindBooksByPrice(double min, double max);
+	boolean delete(int isbn);
+	List<Book> findByPrice(double min, double max);
 	List<Book> listOrderByTitle();
 }

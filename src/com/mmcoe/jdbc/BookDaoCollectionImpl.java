@@ -1,8 +1,5 @@
 package com.mmcoe.jdbc;
 
-import com.mmcoe.pojo.Book;
-import com.mmcoe.service.BookNotFoundException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,136 +8,132 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+
+import com.mmcoe.pojo.Book;
 
 public class BookDaoCollectionImpl implements BookDao {
 
-    // ── save ──────────────────────────────────────────────────────────────────
-    @Override
-    public boolean save(Book b) {
-        String sql = "INSERT INTO workshop (book_id, book_title, book_author, book_price) VALUES (?, ?, ?, ?)";
-        try (Connection conn = JdbcFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    private List<Book> books;
 
-            stmt.setInt(1, b.getIsbn());
-            stmt.setString(2, b.getTitle());
-            stmt.setString(3, b.getAuthor());
-            stmt.setDouble(4, b.getPrice());
-            stmt.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public BookDaoCollectionImpl() {
+        this.books = new ArrayList<>(); 
     }
 
-    // ── find ──────────────────────────────────────────────────────────────────
-    @Override
-    public Book find(int isbn) throws BookNotFoundException {
-        String sql = "SELECT * FROM workshop WHERE book_id = ?";
-        try (Connection conn = JdbcFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+	@Override
+	public boolean save (Book b) {
+		String sql = "insert into books values (?, ?, ?, ?)";
 
-            stmt.setInt(1, isbn);
-            ResultSet rs = stmt.executeQuery();
+		try {
+			Connection conn = JdbcFactory.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, b.getIsbn());
+			stmt.setString(2, b.getTitle());
+			stmt.setString(3, b.getAuthor());
+			stmt.setDouble(4, b.getPrice());
 
-            if (rs.next()) {
-                return mapRow(rs);
-            } else {
-                throw new BookNotFoundException("Book not found with ISBN: " + isbn);
-            }
+			stmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
-        } catch (SQLException e) {
-            throw new BookNotFoundException("DB error: " + e.getMessage());
-        }
-    }
+	@Override
+	public Optional<Book> find(int isbn) {
+		String sql = "select * from books where isbn=" + isbn;
 
-    // ── list ──────────────────────────────────────────────────────────────────
-    @Override
-    public List<Book> list() {
-        String sql = "SELECT * FROM workshop";
-        List<Book> books = new ArrayList<>();
-        try (Connection conn = JdbcFactory.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+		try {
+			Connection conn = JdbcFactory.getConnection();
+			ResultSet rs = conn.createStatement().executeQuery(sql);
+			Book b = null;
+			if (rs.next()) {
+				b = new Book();
+				b.setIsbn(rs.getInt(1));
+				b.setTitle(rs.getString(2));
+				b.setAuthor(rs.getString(3));
+				b.setPrice(rs.getDouble(4));
+			}
+			return Optional.of(b);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return Optional.empty();
+		}
+	}
 
-            while (rs.next()) {
-                books.add(mapRow(rs));
-            }
+	@Override
+	public List<Book> list() {
+		String sql = "select * from books";
+		List<Book> books = new ArrayList<Book>();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return books;
-    }
+		try {
+			Connection conn = JdbcFactory.getConnection();
+			ResultSet rs = conn.createStatement().executeQuery(sql);
 
-    // ── listOrderByTitle ──────────────────────────────────────────────────────
-    @Override
-    public List<Book> listOrderByTitle() {
-        String sql = "SELECT * FROM workshop ORDER BY book_title";
-        List<Book> books = new ArrayList<>();
-        try (Connection conn = JdbcFactory.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+			while (rs.next()) {
+				Book b = new Book();
+				b.setIsbn(rs.getInt(1));
+				b.setTitle(rs.getString(2));
+				b.setAuthor(rs.getString(3));
+				b.setPrice(rs.getDouble(4));
+				books.add(b);
+			}
+			return books;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-            while (rs.next()) {
-                books.add(mapRow(rs));
-            }
+	@Override
+	public boolean delete(int isbn) {
+		String sql = "delete from books where isbn=" + isbn;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return books;
-    }
+		try {
+			Connection conn = JdbcFactory.getConnection();
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
-    // ── delete ────────────────────────────────────────────────────────────────
-    @Override
-    public Boolean delete(int isbn) throws BookNotFoundException {
-        String sql = "DELETE FROM workshop WHERE book_id = ?";
-        try (Connection conn = JdbcFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+	@Override
+	public List<Book> findByPrice(double min, double max) {
+		String sql = "select * from books where price between ? and ?";
+		List<Book> books = new ArrayList<Book>();
 
-            stmt.setInt(1, isbn);
-            int rows = stmt.executeUpdate();
+		try {
+			Connection conn = JdbcFactory.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setDouble(1, min);
+			stmt.setDouble(2, max);
+			
+			ResultSet rs = stmt.executeQuery();
 
-            if (rows == 0) {
-                throw new BookNotFoundException("Book not found with ISBN: " + isbn);
-            }
-            return true;
+			while (rs.next()) {
+				Book b = new Book();
+				b.setIsbn(rs.getInt(1));
+				b.setTitle(rs.getString(2));
+				b.setAuthor(rs.getString(3));
+				b.setPrice(rs.getDouble(4));
+				books.add(b);
+			}
+			return books;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-        } catch (SQLException e) {
-            throw new BookNotFoundException("DB error: " + e.getMessage());
-        }
-    }
+	@Override
+	public List<Book> listOrderByTitle() {
+	    List<Book> list = this.list();      
+	    list.sort(Comparator.comparing(Book::getTitle));
+	    return list;
+	}
 
-    // ── FindBooksByPrice ──────────────────────────────────────────────────────
-    @Override
-    public List<Book> FindBooksByPrice(double min, double max) {
-        String sql = "SELECT * FROM workshop WHERE book_price >= ? AND book_price <= ?";
-        List<Book> books = new ArrayList<>();
-        try (Connection conn = JdbcFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setDouble(1, min);
-            stmt.setDouble(2, max);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                books.add(mapRow(rs));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return books;
-    }
-
-    // ── helper ────────────────────────────────────────────────────────────────
-    private Book mapRow(ResultSet rs) throws SQLException {
-        int isbn       = rs.getInt("book_id");
-        String title   = rs.getString("book_title");
-        String author  = rs.getString("book_author");
-        double price   = rs.getDouble("book_price");
-        return new Book(isbn, title, author, price);
-    }
 }

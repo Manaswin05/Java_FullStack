@@ -12,7 +12,7 @@ public class BookDaoCollectionImpl implements BookDao {
     private List<Book> books;
 
     public BookDaoCollectionImpl() {
-        this.books = new ArrayList<>();  // Fix: was assigning null to itself
+        this.books = new ArrayList<>(); 
     }
 
     public void Display() {
