@@ -1,5 +1,3 @@
 /bin/
-*.jar
-.metadata/
-mvn-demo/bin/
-mvn-demo/target/
+/bin_test/
+/.metadata/
