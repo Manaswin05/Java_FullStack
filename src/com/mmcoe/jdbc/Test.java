@@ -1,7 +1,6 @@
 package com.mmcoe.jdbc;
 
 import com.mmcoe.pojo.Book;
-import com.mmcoe.service.BookNotFoundException;
 import java.util.List;
 
 public class Test {
@@ -20,26 +19,18 @@ public class Test {
         for (Book b : bd.list()) System.out.println(b);
 
         // Find
-        try {
-            System.out.println("\nFound: " + bd.find(12));
-        } catch (BookNotFoundException e) {
-            e.printStackTrace();
-        }
+        System.out.println("\nFound: " + bd.find(12).orElse(null));
 
         // Price range
         System.out.println("\nBooks priced 200 - 300:");
-        for (Book b : bd.FindBooksByPrice(200, 300)) System.out.println(b);
+        for (Book b : bd.findByPrice(200, 300)) System.out.println(b);
 
         // Ordered by title
         System.out.println("\nOrdered by title:");
         bd.listOrderByTitle().forEach(System.out::println);
 
         // Delete
-        try {
-            bd.delete(11);
-            System.out.println("\nBook 11 deleted.");
-        } catch (BookNotFoundException e) {
-            e.printStackTrace();
-        }
+        bd.delete(11);
+        System.out.println("\nBook 11 deleted.");
     }
 }
